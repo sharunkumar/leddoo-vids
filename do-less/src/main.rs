@@ -173,10 +173,12 @@ mod thonk {
             can_ore: bool,
             can_clay: bool,
             can_obsidian: bool,
+            stack_level: u32,
         ) {
+            // dbg!(&stack_level);
             // done?
             if state.minute == limit {
-                let result = state.pack.geode;
+                let result: u8 = state.pack.geode;
                 *max_result = (*max_result).max(result);
                 return;
             }
@@ -209,6 +211,7 @@ mod thonk {
                     true,
                     true,
                     true,
+                    stack_level + 1,
                 );
             } else {
                 let mut new_can_obsidian = true;
@@ -227,6 +230,7 @@ mod thonk {
                             true,
                             true,
                             true,
+                            stack_level + 1,
                         );
                     }
                 }
@@ -244,6 +248,7 @@ mod thonk {
                             true,
                             true,
                             true,
+                            stack_level + 1,
                         );
                     }
                 }
@@ -261,6 +266,7 @@ mod thonk {
                             true,
                             true,
                             true,
+                            stack_level + 1,
                         );
                     }
                 }
@@ -273,13 +279,23 @@ mod thonk {
                     new_can_ore,
                     new_can_clay,
                     new_can_obsidian,
+                    stack_level + 1,
                 );
             }
         }
 
         pub fn solve(bp: &Blueprint, limit: u8) -> u8 {
             let mut max_result = 0;
-            solution(State::new(), bp, limit, &mut max_result, true, true, true);
+            solution(
+                State::new(),
+                bp,
+                limit,
+                &mut max_result,
+                true,
+                true,
+                true,
+                0,
+            );
             max_result
         }
     }
@@ -289,6 +305,7 @@ mod thonk {
         let mut result = 0;
         for bp in bps {
             let geodes = f(bp, 24);
+            dbg!(&geodes);
             // println!("geodes: {}", geodes);
             result += bp.id as u32 * geodes as u32;
         }
@@ -310,7 +327,7 @@ mod thonk {
 
 pub fn main() {
     use thonk::*;
-    let input = include_str!("d19-prod.txt");
+    let input = include_str!("d19-test.txt");
 
     let input = parse(input);
 
