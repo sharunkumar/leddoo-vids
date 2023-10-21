@@ -1,63 +1,5 @@
-use std::cell::UnsafeCell;
-
-struct Stats {
-    memo_refs: u64,
-    memo_hits: u64,
-    states_visited: u64,
-    states_skipped: u128,
-}
-
-impl Stats {
-    #[inline]
-    const fn new() -> Self {
-        Stats {
-            memo_refs: 0,
-            memo_hits: 0,
-            states_visited: 0,
-            states_skipped: 0,
-        }
-    }
-
-    fn reset(&mut self) {
-        *self = Self::new();
-    }
-
-    fn print(&self) {
-        println!("memo refs: {}", self.memo_refs);
-        println!(
-            "memo hits: {} ({:.0}%)",
-            self.memo_hits,
-            self.memo_hits as f64 / self.memo_refs as f64 * 100.0
-        );
-        println!("states visited: {}", self.states_visited);
-        println!("states skipped: {}", self.states_skipped);
-        println!();
-    }
-}
-
-struct StatsNonsense {
-    inner: UnsafeCell<Stats>,
-}
-
-impl StatsNonsense {
-    fn with<F: FnOnce(&mut Stats)>(&self, f: F) {
-        if DO_STATS {
-            f(unsafe { &mut *self.inner.get() })
-        }
-    }
-}
-
-unsafe impl Sync for StatsNonsense {}
-
-const DO_STATS: bool = 0 == 1;
-static STATS: StatsNonsense = StatsNonsense {
-    inner: UnsafeCell::new(Stats::new()),
-};
-
 mod thonk {
     use regex::Regex;
-
-    use super::STATS;
 
     #[derive(Clone, Copy, Debug)]
     pub struct Blueprint {
@@ -221,7 +163,7 @@ mod thonk {
     }
 
     pub mod v5 {
-        use super::{Blueprint, State, STATS};
+        use super::{Blueprint, State};
 
         fn solution(
             state: State,
@@ -232,10 +174,6 @@ mod thonk {
             can_clay: bool,
             can_obsidian: bool,
         ) {
-            STATS.with(|s| {
-                s.states_visited += 1;
-            });
-
             // done?
             if state.minute == limit {
                 let result = state.pack.geode;
@@ -347,7 +285,6 @@ mod thonk {
     }
 
     pub fn part_1<F: Fn(&Blueprint, u8) -> u8>(bps: &[Blueprint], f: F) {
-        super::STATS.with(|s| s.reset());
         let t0 = std::time::Instant::now();
         let mut result = 0;
         for bp in bps {
@@ -356,11 +293,9 @@ mod thonk {
             result += bp.id as u32 * geodes as u32;
         }
         println!("part 1 result: {} in {:?}", result, t0.elapsed());
-        super::STATS.with(|s| s.print());
     }
 
     pub fn part_1_ex<F: Fn(&Blueprint, u8) -> u8>(bps: &[Blueprint], f: F, n: u8) {
-        super::STATS.with(|s| s.reset());
         let t0 = std::time::Instant::now();
         let mut _result = 0;
         for bp in bps {
@@ -370,7 +305,6 @@ mod thonk {
         }
         //println!("part 1 n: {}, result: {} in {:?}", n, result, t0.elapsed());
         println!("({}, {}), ", n, t0.elapsed().as_secs_f64());
-        super::STATS.with(|s| s.print());
     }
 }
 
