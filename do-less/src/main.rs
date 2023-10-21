@@ -295,17 +295,17 @@ mod thonk {
         println!("part 1 result: {} in {:?}", result, t0.elapsed());
     }
 
-    pub fn part_1_ex<F: Fn(&Blueprint, u8) -> u8>(bps: &[Blueprint], f: F, n: u8) {
-        let t0 = std::time::Instant::now();
-        let mut _result = 0;
-        for bp in bps {
-            let geodes = f(bp, n);
-            // println!("geodes: {}", geodes);
-            _result += bp.id as u32 * geodes as u32;
-        }
-        //println!("part 1 n: {}, result: {} in {:?}", n, result, t0.elapsed());
-        println!("({}, {}), ", n, t0.elapsed().as_secs_f64());
-    }
+    // pub fn part_1_ex<F: Fn(&Blueprint, u8) -> u8>(bps: &[Blueprint], f: F, n: u8) {
+    //     let t0 = std::time::Instant::now();
+    //     let mut _result = 0;
+    //     for bp in bps {
+    //         let geodes = f(bp, n);
+    //         // println!("geodes: {}", geodes);
+    //         _result += bp.id as u32 * geodes as u32;
+    //     }
+    //     //println!("part 1 n: {}, result: {} in {:?}", n, result, t0.elapsed());
+    //     println!("({}, {}), ", n, t0.elapsed().as_secs_f64());
+    // }
 }
 
 pub fn main() {
@@ -317,7 +317,7 @@ pub fn main() {
     println!("thonk no memo");
     part_1(&input, v5::solve);
 
-    for i in 10..100 {
-        part_1_ex(&input, v5::solve, i);
-    }
+    // for i in 10..100 {
+    //     part_1_ex(&input, v5::solve, i);
+    // }
 }
